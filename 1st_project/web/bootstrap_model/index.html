@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Find opinions about you concern! </title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom fonts for this template -->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic" rel="stylesheet" type="text/css">
+
+  <!-- Custom styles for this template -->
+  <link href="css/landing-page.min.css" rel="stylesheet">
+
+
+<style>
+body {
+  position: relative;
+  font-family: "Helvetica Neue", sans-serif;
+  width: 960px;
+  margin: auto;
+  margin-bottom: 1em;
+  margin-top: 20px;ss
+}
+#presets a { border-left: solid #666 1px; padding: 0 10px; }
+#presets a.first { border-left: none; }
+#keyword { width: 300px; }
+#fetcher { width: 500px; }
+#keyword, #go { font-size: 1.5em; }
+#text { width: 100%; height: 100px; }
+p.copy { font-size: small; }
+#form { font-size: small; position: relative; }
+hr { border: none; border-bottom: solid #ccc 1px; }
+a.active { text-decoration: none; color: #000; font-weight: bold; cursor: text; }
+#angles line, #angles path, #angles circle { stroke: #666; }
+#angles text { fill: #333; }
+#angles path.drag { fill: #666; cursor: move; }
+#angles { text-align: center; margin: 0 auto; width: 350px; }
+#angles input, #max { width: 42px; }
+</style>
+
+<script src="./Word Cloud Generator_files/osd.js"></script>
+<script type="text/javascript" async="" src="./Word Cloud Generator_files/ga.js"></script>
+<link rel="preload" href="./Word Cloud Generator_files/f.txt" as="script">
+<script type="text/javascript" src="./Word Cloud Generator_files/f.txt"></script>
+<link rel="preload" href="https://pagead2.googlesyndication.com/pagead/js/r20190821/r20190131/show_ads_impl.js" as="script">
+
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-light bg-light static-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">Start to analysis</a>
+      <a class="btn btn-primary" href="#">Search</a>
+    </div>
+  </nav>
+
+  <!-- Masthead -->
+  <header class="masthead text-white text-center">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-xl-9 mx-auto">
+          <h1 class="mb-5">Please input the word you want to know:</h1>
+        </div>
+        <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
+          <form>
+            <div class="form-row">
+              <div class="col-12 col-md-9 mb-2 mb-md-0">
+                <input type="email" class="form-control form-control-lg" placeholder="Enter the keyword...">
+              </div>
+              <div class="col-12 col-md-3">
+                <button type="submit" class="btn btn-block btn-lg btn-primary">Start!</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+
+    
+
+
+
+  <div id="vis">
+      <svg width="960" height="600">
+      <g></g>
+      <g transform="translate(480,300)"></g>
+      </svg>
+    </div>
+  
+  <form id="form">
+  
+  <p style="position: absolute; right: 0px; top: 0px; display: none;" id="status">202/202</p>
+  
+  <div style="text-align: center">
+    <div id="presets"></div>
+    <div id="custom-area">
+      <p><label for="text">Paste your text below!</label>
+      </p><p><textarea id="text">How the Word Cloud Generator Works
+  
+  The layout algorithm for positioning words without overlap is available on GitHub under an open source license as d3-cloud. Note that this is the only the layout algorithm and any code for converting text into words and rendering the final output requires additional development.
+  
+  As word placement can be quite slow for more than a few hundred words, the layout algorithm can be run asynchronously, with a configurable time step size. This makes it possible to animate words as they are placed without stuttering. It is recommended to always use a time step even without animations as it prevents the browser’s event loop from blocking while placing the words.
+  
+  The layout algorithm itself is incredibly simple. For each word, starting with the most “important”:
+  
+  Attempt to place the word at some starting point: usually near the middle, or somewhere on a central horizontal line.
+  If the word intersects with any previously placed words, move it one step along an increasing spiral. Repeat until no intersections are found.
+  The hard part is making it perform efficiently! According to Jonathan Feinberg, Wordle uses a combination of hierarchical bounding boxes and quadtrees to achieve reasonable speeds.
+  
+  Glyphs in JavaScript
+  
+  There isn’t a way to retrieve precise glyph shapes via the DOM, except perhaps for SVG fonts. Instead, we draw each word to a hidden canvas element, and retrieve the pixel data.
+  
+  Retrieving the pixel data separately for each word is expensive, so we draw as many words as possible and then retrieve their pixels in a batch operation.
+  
+  Sprites and Masks
+  
+  My initial implementation performed collision detection using sprite masks. Once a word is placed, it doesn't move, so we can copy it to the appropriate position in a larger sprite representing the whole placement area.
+  
+  The advantage of this is that collision detection only involves comparing a candidate sprite with the relevant area of this larger sprite, rather than comparing with each previous word separately.
+  
+  Somewhat surprisingly, a simple low-level hack made a tremendous difference: when constructing the sprite I compressed blocks of 32 1-bit pixels into 32-bit integers, thus reducing the number of checks (and memory) by 32 times.
+  
+  In fact, this turned out to beat my hierarchical bounding box with quadtree implementation on everything I tried it on (even very large areas and font sizes). I think this is primarily because the sprite version only needs to perform a single collision test per candidate area, whereas the bounding box version has to compare with every other previously placed word that overlaps slightly with the candidate area.
+  
+  Another possibility would be to merge a word’s tree with a single large tree once it is placed. I think this operation would be fairly expensive though compared with the analagous sprite mask operation, which is essentially ORing a whole block.
+  
+      </textarea>
+      <button id="go" type="submit">Go!</button>
+    </p></div>
+  </div>
+  
+  <hr>
+  
+  <div style="float: right; text-align: right">
+    <p><label for="max">Number of words:</label> <input type="number" value="250" min="1" id="max">
+    </p><p><label for="per-line"><input type="checkbox" id="per-line"> One word per line</label>
+    <!--<p><label for="colours">Colours:</label> <a href="#" id="random-palette">get random palette</a>-->
+    </p><p><label>Download:</label>
+      <button id="download-svg">SVG</button><!-- |
+      <a id="download-png" href="#">PNG</a>-->
+  </p></div>
+  
+  <div style="float: left">
+    <p><label>Spiral:</label>
+      <label for="archimedean"><input type="radio" name="spiral" id="archimedean" value="archimedean" checked="checked"> Archimedean</label>
+      <label for="rectangular"><input type="radio" name="spiral" id="rectangular" value="rectangular"> Rectangular</label>
+    </p><p><label for="scale">Scale:</label>
+      <label for="scale-log"><input type="radio" name="scale" id="scale-log" value="log" checked="checked"> log n</label>
+      <label for="scale-sqrt"><input type="radio" name="scale" id="scale-sqrt" value="sqrt"> √n</label>
+      <label for="scale-linear"><input type="radio" name="scale" id="scale-linear" value="linear"> n</label>
+    </p><p><label for="font">Font:</label> <input type="text" id="font" value="Impact">
+  </p></div>
+  
+  <div id="angles">
+    <p><input type="number" id="angle-count" value="5" min="1"> <label for="angle-count">orientations</label>
+      <label for="angle-from">from</label> <input type="number" id="angle-from" value="-60" min="-90" max="90"> °
+      <label for="angle-to">to</label> <input type="number" id="angle-to" value="60" min="-90" max="90"> °
+  </p><svg width="151" height="70.5"><g transform="translate(75.5,60.5)"><path d="M -40.5 0 A 40.5 40.5 0 0 1 40.5 0" style="fill: none;"></path><line x1="-47.5" x2="47.5"></line><line y2="-47.5"></line><text dy=".3em" text-anchor="end" transform="rotate(0)translate(-50.5)rotate(0)translate(2)">-90°</text><text text-anchor="middle" transform="rotate(90)translate(-50.5)rotate(-90)translate(2)">0°</text><text dy=".3em" text-anchor="start" transform="rotate(180)translate(-50.5)rotate(-180)translate(2)">90°</text><path class="angle" d="M-35.07402885326976,-20.250000000000014A40.5,40.5 0 0,1 35.074028853269766,-20.25L0,0Z" style="fill: rgb(255, 204, 0);"></path><line class="angle" transform="rotate(30)" x2="-45.5"></line><line class="angle" transform="rotate(60)" x2="-40.5"></line><line class="angle" transform="rotate(90)" x2="-40.5"></line><line class="angle" transform="rotate(120)" x2="-40.5"></line><line class="angle" transform="rotate(150)" x2="-45.5"></line><path class="drag" d="M-9.5,0L-3,3.5L-3,-3.5Z" transform="rotate(30)translate(-40.5)"></path><path class="drag" d="M-9.5,0L-3,3.5L-3,-3.5Z" transform="rotate(150)translate(-40.5)"></path></g></svg></div>
+  
+  <hr style="clear: both">
+  
+  </form>
+  
+  
+  <script src="./Word Cloud Generator_files/d3.min.js"></script>
+  <script src="./Word Cloud Generator_files/cloud.min.js"></script><form action="https://www.jasondavies.com/echo" target="_blank" method="POST"><input type="hidden" name="content-type"><input type="hidden" name="echo"></form>
+  <script async="" src="./Word Cloud Generator_files/f(1).txt"></script>
+  <script>
+  window.google_analytics_uacct = "UA-54563-3";
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-54563-3']);
+  _gaq.push(['_trackPageview']);
+  setTimeout(function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+  }, 1);
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+  <ins class="adsbygoogle adsbygoogle-noablate" style="display: none !important;" data-adsbygoogle-status="done">
+    <ins id="aswift_1_expand" style="display:inline-table;border:none;height:0px;margin:0;padding:0;position:relative;visibility:visible;width:0px;background-color:transparent;">
+      <ins id="aswift_1_anchor" style="display:block;border:none;height:0px;margin:0;padding:0;position:relative;visibility:visible;width:0px;background-color:transparent;">
+        <iframe frameborder="0" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" onload="var i=this.id,s=window.google_iframe_oncopy,H=s&amp;&amp;s.handlers,h=H&amp;&amp;H[i],w=this.contentWindow,d;try{d=w.document}catch(e){}if(h&amp;&amp;d&amp;&amp;(!d.body||!d.body.firstChild)){if(h.call){setTimeout(h,0)}else if(h.match){try{h=s.upd(h,i)}catch(e){}w.location.replace(h)}}" id="aswift_1" name="aswift_1" style="left:0;position:absolute;top:0;border:0px;width:0px;height:0px;" src="./Word Cloud Generator_files/saved_resource(1).html"></iframe></ins></ins></ins>
+        <iframe id="google_osd_static_frame_2313964593" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;" src="./Word Cloud Generator_files/saved_resource(2).html">
+        </iframe>
+     
+
+      <iframe id="google_shimpl" style="display: none;" src="./Word Cloud Generator_files/saved_resource(3).html">
+        </iframe>
+        <iframe id="google_esf" name="google_esf" src="./Word Cloud Generator_files/zrt_lookup.html" data-ad-client="ca-pub-2911491153890039" style="display: none;">
+        </iframe>
+      
+
+
+
+
+
+  <!-- Testimonials -->
+  <section class="testimonials text-center bg-light">
+    <div class="container">
+      <h2 class="mb-5">What people are saying...</h2>
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+            <img class="img-fluid rounded-circle mb-3" src="img/testimonials-1.jpg" alt="">
+            <h5>Margaret E.</h5>
+            <p class="font-weight-light mb-0">"This is fantastic! Thanks so much guys!"</p>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+            <img class="img-fluid rounded-circle mb-3" src="img/testimonials-2.jpg" alt="">
+            <h5>Serina</h5>
+            <p class="font-weight-light mb-0">"What is language for? Some people seem to think it is for 
+              practicing grammar rules and learning lists of words--the longer the words the better. 
+              That’s wrong.Language is for the exchange of ideas, for communication."
+            </p>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="testimonial-item mx-auto mb-5 mb-lg-0">
+            <img class="img-fluid rounded-circle mb-3" src="img/testimonials-3.jpg" alt="">
+            <h5>Sarah W.</h5>
+            <p class="font-weight-light mb-0">"Thanks so much for making these free resources available to us!"</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> 
+
+
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+
+
+</body>
+
+</html>
